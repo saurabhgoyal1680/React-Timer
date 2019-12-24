@@ -35,40 +35,55 @@ class App extends React.Component{
 	updateTimer(){
 		this.setState({
 			time : this.state.timerValue * 100
-		},this.showTime)
+		},()=>this.showTime(false))
 	}
 
-	showTime(){
+	showTime(running){
 		var count = this.state.time;
 		var ms = count%100; count=Math.floor(count/100); ms = this.pad(ms);
 		var sec = count%60; count=Math.floor(count/60); sec = this.pad(sec);
 		var min = count%60; count=Math.floor(count/60); min = this.pad(min);
 		var hr = count%60; hr = this.pad(hr);
-		var timer = hr+":"+min+":"+sec+":"+ms;
+		var timer;
+		if(!running){
+			timer = hr+":"+min+":"+sec+":"+ms;
+		}
+		else
+			timer = <table ><tbody><tr><td>{hr}:</td><td>{min}:</td><td>{sec}:</td><td>{ms}</td></tr></tbody></table>;
 		this.setState({
 			timer
 		})
+		
 	}
 
 	startTimer(){
+		var red = false;
+		var watch = document.getElementsByClassName('runningTime')[0];
+		watch.style.cssText = "font-size:3em;padding-top:1.6em;transition-duration:0.2s;";
 		this.setState({
 			timerRunning: "none",
 			timerStopped: "block"
 		})
 		this.runningClock = setInterval(()=>{
 			if(this.state.time === 0){
-				clearInterval(this.runningClock);
 				this.stopTimer(true);
-				return;
+				return ;
+			}
+			if(!red && this.state.time<1000){
+				red = true;
+				watch.style.cssText = "color:red;font-size:3em;padding-top:1.6em;transition-duration:0s;";
 			}
 			this.setState({
 				time: this.state.time - 1
-			}, this.showTime)		
+			},()=> this.showTime(true))		
 		},10)
 	}
 
 	stopTimer(isRefresh){
+		var watch = document.getElementsByClassName('runningTime')[0];
+		watch.style.cssText = "font-size:1.8em;transition-duration:0.2s;";
 		clearInterval(this.runningClock);
+		this.showTime(false);
 		if(isRefresh){
 			this.setInitialState();
 			return;

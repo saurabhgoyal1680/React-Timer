@@ -55,6 +55,7 @@ button{
   font-size: 2em;
   border: none;
   display: inline-block;
+  outline: none;
 }
 
 button:hover{
